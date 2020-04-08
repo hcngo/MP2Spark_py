@@ -15,7 +15,7 @@ def tokenize(line, delimiters_string):
         for t in tokens:
             new_tokens.extend(t.split(c))
         tokens = new_tokens
-    return tokens
+    return [t.lower() for t in tokens if t]
     # return line
 
 stop_words = []
@@ -41,11 +41,12 @@ words_count = words.reduceByKey(lambda a, b: a + b)
 count_words = words_count.map(lambda wc: (wc[1], wc[0]))
 sorted_list = count_words.sortByKey(False)
 top_10 = sorted_list.take(10)
+sorted_top_10 = sorted(top_10, key=lambda cw: cw[1])
 
 outputFile = open(sys.argv[4],"w")
 
 #write results to output file. Foramt for each line: (line +"\n")
-for (count, word) in top_10:
+for (count, word) in sorted_top_10:
     outputFile.write("{}\t{}\n".format(word, count))
 
 outputFile.close()
